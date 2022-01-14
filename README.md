@@ -27,3 +27,9 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### 不用复制的方式跟git联系
+```
+git remote add orgin 地址
+git push -u orgin master
+``` 
