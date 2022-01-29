@@ -35,10 +35,10 @@
   import TabControl from "components/content/tabControl/TabControl";
   import GoodsList from 'components/content/goods/GoodsList'
   import Scroll from 'components/common/scroll/Scroll'
-  import BackTop from "@/components/content/backTop/BackTop";
 
   import {getHomeMultidata, getHomeGoods} from "network/home";
   import {debounce} from "@/common/utils";
+  import {itemListenerMixin, backTopMixin} from "@/common/mixin";
 
   export default {
 		name: "Home",
@@ -53,7 +53,6 @@
           'sell': {page: 0, list: []}
         },
         currentType: 'pop',
-        isShowBackTop: false,
         tabOffsetTop: 0,
         isTabFixed: false,
         saveY: 0,
@@ -62,6 +61,7 @@
         saveYSell: 0
       }
     },
+    mixins: [itemListenerMixin, backTopMixin],
     components: {
       HomeSwiper,
       RecommendView,
@@ -69,8 +69,7 @@
       NavBar,
       TabControl,
       GoodsList,
-      Scroll,
-      BackTop
+      Scroll
     },
     computed: {
       showGoods() {
@@ -83,11 +82,13 @@
     activated() {
       this.$refs.scroll.refresh()
       this.$refs.scroll.scrollTo(0, this.saveY, 0)
-      console.log('activated')
     },
     deactivated() {
+      //1.保存Y值
       this.saveY = this.$refs.scroll.getScrollY()
-      console.log('deactivated')
+
+      //2.取消全局事件的监听
+      this.$bus.$off('itemImgLoad', this.itemImgListener)
     },
     created() {
       //1.请求多个数据
@@ -100,12 +101,14 @@
     //不要在created里用$refs或者document.querySelector()
     //还没挂载完成会拿不到dom元素
     mounted() {
-      //1.图片加载完成的事件监听
-      const refresh = debounce(this.$refs.scroll.refresh, 500)
-      this.$bus.$on('itemImageLoad', () => {
-        // console.log('-----')
-        refresh()
-      })
+      // //1.图片加载完成的事件监听
+      // const refresh = debounce(this.$refs.scroll.refresh, 500)
+      //
+      // //对监听的事件进行保存
+      // this.itemImgListener = () => {
+      //   refresh()
+      // }
+      // this.$bus.$on('itemImageLoad', this.itemImgListener)
     },
     methods: {
       /**
@@ -129,7 +132,7 @@
         }
         this.$refs.tabControl1.currentIndex = index;
         this.$refs.tabControl2.currentIndex = index;
-        console.log(index)
+        // console.log(index)
       },
       backClick() {
         this.$refs.scroll.scrollTo(0, 0, 500)
@@ -156,6 +159,7 @@
       },
       loadMore() {
         this.getHomeGoods(this.currentType)
+        this.$refs.scroll.refresh()
       },
       swiperImageLoad() {
         //获取tabControl的offsetTop
