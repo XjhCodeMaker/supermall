@@ -9,8 +9,8 @@
         <div>
           <tab-content-category :subcategories="showSubcategory"></tab-content-category>
           <tab-control :titles="['综合', '新品', '销量']"
-                       @itemClick="tabClick"></tab-control>
-<!--          <tab-content-detail :category-detail="showCategoryDetail"></tab-content-detail>-->
+                       @tabClick="tabClick" ref="tabControl3"></tab-control>
+          <tab-content-detail :category-detail="showCategoryDetail"></tab-content-detail>
         </div>
       </scroll>
     </div>

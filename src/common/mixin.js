@@ -55,6 +55,7 @@ export const tabControlMixin = {
           this.currentType = SELL
           break
       }
+      this.$refs.tabControl3.currentIndex = index
       console.log(this.currentType);
     }
   }
